@@ -1,3 +1,12 @@
+# What is it
+
+A small python utility I use to monitor the health of my accumulators using [Reload: Pro](http://www.arachnidlabs.com/reload-pro/)
+
+It uses [rlpro-ppython](https://github.com/arachnidlabs/rlpro-python/) and [matplotlib](https://matplotlib.org/).
+
+source code is based on https://matplotlib.org/gallery/animation/animate_decay.html#sphx-glr-gallery-animation-animate-decay-py
+and https://github.com/arachnidlabs/rlpro-python/blob/master/rlpro/characterize.py.
+
 # Usage
 
 ```
