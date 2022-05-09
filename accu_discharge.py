@@ -5,6 +5,7 @@ import itertools
 
 import csv
 
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -106,21 +107,31 @@ def output(args,string):
 
 # use reload pro
 def data_gen():
-    global first,voltage, seconds, capacity, rl 
-    while (first) or (voltage > args.min_volt):
-        first=False
+    global first,volt, seconds, capacity, rl, previous_amp
+    while (first) or (volt > args.min_volt):
         rl.set(args.test_current)
-        current, voltage = rl.read()
+        if first: 
+            # wait for current to settle
+            previous_time=time.time()
+            previous_amp=0
+            time.sleep(1)
+            first=False
 
-        output(args, "%d;%.2f;%.2f;%d" % (seconds, current, voltage, capacity / 3.6))
+        amp, volt = rl.read()
+        current_time=time.time()
 
-        if (voltage <= args.min_volt):
+        if (volt <= args.min_volt):
             rl.set(0.0)
             output(args, "end. Measured capatity: %d mAh in %d seconds" % (capacity / 3.6, seconds))
         else:
-            yield(seconds, [current, voltage])
-            capacity += current*args.delay
-            seconds += args.delay
+            time_step=current_time - previous_time
+            capacity += (amp+previous_amp)*time_step/2            
+            seconds += time_step
+            
+            output(args, "%.2f;%.2f;%.2f;%d" % (seconds, amp, volt, capacity / 3.6))
+            previous_amp=amp
+            previous_time=current_time
+            yield(seconds, [amp, volt])
 
 # called once. sets up graphics and data objs
 def init():
@@ -158,7 +169,7 @@ def run(data):
     xmin, xmax = ax[0].get_xlim()
     if t >= xmax:
         for a in ax:
-            a.set_xlim(xmin, xmax+(xmax-xmin)/10)
+            a.set_xlim(xmin, t+(t-xmin)/10)
             a.figure.canvas.draw()
     
     # autoscale y
