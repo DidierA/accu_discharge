@@ -125,7 +125,7 @@ def data_gen():
             output(args, "end. Measured capatity: %d mAh in %d seconds" % (capacity / 3.6, seconds))
         else:
             time_step=current_time - previous_time
-            capacity += (amp+previous_amp)*time_step/2            
+            capacity += (amp+previous_amp)*time_step/2.0
             seconds += time_step
             
             output(args, "%.2f;%.2f;%.2f;%d" % (seconds, amp, volt, capacity / 3.6))
